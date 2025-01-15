@@ -46,7 +46,9 @@ export const login = asyncHandler(async (req, res) => {
     );
     res.cookie("token", token, {
       httpOnly: true,
-      // secure: true, // Enable in production
+      secure: true, // Enable in production
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      sameSite: "none", // Enable in production
     });
     return res.status(200).json({
       _id: user._id,

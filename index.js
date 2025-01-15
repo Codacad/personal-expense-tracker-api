@@ -15,7 +15,10 @@ setInterval(() => {
 }, 1000 * 60 * 60 * 24);
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://personal-expense-tracker-9dea7.web.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://personal-expense-tracker-9dea7.web.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
