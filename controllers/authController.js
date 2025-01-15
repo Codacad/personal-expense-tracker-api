@@ -46,7 +46,7 @@ export const login = asyncHandler(async (req, res) => {
     );
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // Enable in production
+      secure: process.env.NODE_ENV === "production", // Enable in production
       maxAge: 30 * 24 * 60 * 60 * 1000,
       sameSite: "none", // Enable in production
     });
@@ -63,6 +63,10 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Enable in production
+    sameSite: "none", // Enable in production
+  });
   return res.status(200).send({ message: "Logged out" });
 });
