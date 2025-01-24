@@ -15,9 +15,12 @@ export const getIncomes = asyncHandler(async (req, res) => {
 export const addIncome = asyncHandler(async (req, res) => {
   try {
     const income = await Income.create({ ...req.body, user: req.user.id });
-    res.status(201).json(income);
+    res.status(201).send({
+      message: "Income added successfully",
+      income,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message.split(":")[2] });
   }
 });
 
