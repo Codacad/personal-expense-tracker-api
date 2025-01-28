@@ -4,6 +4,7 @@ import OTP from "../models/otp.js";
 // import { authToken } from "../middlewares/authMiddleware";
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
+import bcrypt from "bcrypt";
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -75,7 +76,7 @@ export const logout = asyncHandler(async (req, res) => {
 });
 
 // Forgot Password
-export const forgotPassword = asyncHandler(async (req, res) => {
+export const sendOtp = asyncHandler(async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -131,18 +132,40 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   }
 });
 
-// Reset Password
+// validate OTP
 export const valitdateOtp = asyncHandler(async (req, res) => {
-  const { email, expires, otp } = req.body;
+  const { email, otp } = req.body;
   try {
-    const otp = await User.findOne({ email, otp });
-
-    if (!otp) {
-      return res.status(404).send({ message: "Invalid OTP" });
+    const otpUser = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+    console.log(otpUser);
+    if (otpUser.length > 0) {
+      if (otp !== otpUser[0].otp) {
+        return res.status(404).send({ message: "Invalid OTP" });
+      } else {
+        return res
+          .status(201)
+          .send({ id: otpUser._id, message: "OPT validated successfully" });
+      }
     }
-
-
   } catch (error) {
     return res.status(500).send({ message: error.message });
+  }
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { email, newPassword, confirmNewPassword } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).send({ message: "Passwords do not match" });
+    }
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    user.password = newPassword;
+    await user.save();
+    return res.status(200).send({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(404).send(error.message);
   }
 });

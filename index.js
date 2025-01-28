@@ -19,7 +19,7 @@ app.use(
       "http://localhost:5173",
       "https://personal-expense-tracker-9dea7.web.app",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
