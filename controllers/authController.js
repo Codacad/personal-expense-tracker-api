@@ -1,15 +1,14 @@
 import User from "../models/user.js";
 import nodemailer from "nodemailer";
 import OTP from "../models/otp.js";
-// import { authToken } from "../middlewares/authMiddleware";
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
-import bcrypt from "bcrypt";
+
+// User Regiteration
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   try {
     const userExists = await User.findOne({ email });
-
     if (userExists) {
       return res.status(400).send({ message: "User already exists" });
     } else {
@@ -30,6 +29,7 @@ export const register = asyncHandler(async (req, res) => {
   }
 });
 
+// User Login
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -48,17 +48,16 @@ export const login = asyncHandler(async (req, res) => {
       { expiresIn: "30d" }
     );
     res.cookie("token", token, {
-      httpOnly: true, // Enable in production
-      secure: process.env.NODE_ENV === "production", // Enable in production
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production", 
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Enable in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      // token: authToken(user._id),
       createdAt: user.createdAt,
     });
   } catch (error) {
@@ -68,9 +67,9 @@ export const login = asyncHandler(async (req, res) => {
 
 export const logout = asyncHandler(async (req, res) => {
   res.clearCookie("token", {
-    httpOnly: true, // Enable in production
-    secure: process.env.NODE_ENV === "production", // Enable in production
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Enable in production
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === "production", 
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
   return res.status(200).send({ message: "Logged out" });
 });
@@ -132,7 +131,7 @@ export const sendOtp = asyncHandler(async (req, res) => {
   }
 });
 
-// validate OTP
+// Validate OTP
 export const valitdateOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
   try {
@@ -152,6 +151,7 @@ export const valitdateOtp = asyncHandler(async (req, res) => {
   }
 });
 
+// Reset Password
 export const resetPassword = asyncHandler(async (req, res) => {
   const { email, newPassword, confirmNewPassword } = req.body;
   try {
