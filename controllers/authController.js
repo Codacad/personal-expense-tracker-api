@@ -45,12 +45,12 @@ export const login = asyncHandler(async (req, res) => {
     const token = jwt.sign(
       { id: user._id, name: user.name, email: user.email, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "30d" }
+      { expiresIn: "1h" }
     );
     res.cookie("token", token, {
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === "production", 
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 1000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(200).json({
@@ -59,6 +59,7 @@ export const login = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       createdAt: user.createdAt,
+      expires: Date.now() + 60 * 60 * 1000,
     });
   } catch (error) {
     return res.status(500).send({ message: error.message.split(":")[2] });
@@ -67,8 +68,8 @@ export const login = asyncHandler(async (req, res) => {
 
 export const logout = asyncHandler(async (req, res) => {
   res.clearCookie("token", {
-    httpOnly: true, 
-    secure: process.env.NODE_ENV === "production", 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
   return res.status(200).send({ message: "Logged out" });

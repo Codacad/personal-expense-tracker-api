@@ -13,6 +13,9 @@ dbConnection();
 setInterval(() => {
   dbConnection();
 }, 1000 * 60 * 60 * 24);
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
@@ -23,9 +26,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.options("*", cors());
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
